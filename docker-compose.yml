@@ -3,7 +3,7 @@ version: "3.8"
 services:
   cliente:
     build:
-      context: ./grpc
+      context: ./grpc/cliente
       dockerfile: cliente/Dockerfile
     image: cliente:latest
     depends_on:
@@ -13,7 +13,7 @@ services:
 
   servidor:
     build:
-      context: ./grpc
+      context: ./grpc/servidor
       dockerfile: servidor/Dockerfile
     image: servidor:latest
     ports:
