@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  cliente:
+    build:
+      context: ./cliente
+    depends_on:
+      - servidor
+    networks:
+      - grpc-network
+
+  servidor:
+    build:
+      context: ./servidor
+    ports:
+      - "50051:50051"
+    networks:
+      - grpc-network
+
+networks:
+  grpc-network:
