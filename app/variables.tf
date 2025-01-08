@@ -34,12 +34,6 @@ variable "container_image" {
   default     = "nginx:latest"
 }
 
-variable "container_port" {
-  description = "Puerto expuesto por el contenedor"
-  type        = number
-  default     = 80
-}
-
 variable "memory_request" {
   description = "Memoria solicitada por el contenedor"
   type        = string
