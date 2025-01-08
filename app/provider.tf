@@ -54,7 +54,7 @@ resource "kubernetes_deployment" "servidor" {
       spec {
         container {
           name  = "servidor"
-          image = var.servidor_image  # Aquí se utiliza la variable para la imagen
+          image =  "585768158376.dkr.ecr.us-east-1.amazonaws.com/servidor:latest" # var.servidor_image
 
           port {
             container_port = 50051  # Ajusta según el puerto que exponga tu servidor
@@ -91,7 +91,7 @@ resource "kubernetes_deployment" "cliente" {
       spec {
         container {
           name  = "cliente"
-          image = var.cliente_image  # Aquí se utiliza la variable para la imagen
+          image = "585768158376.dkr.ecr.us-east-1.amazonaws.com/cliente:latest"  # Aquí se utiliza la variable para la imagen var.cliente_image
 
           env {
             name  = "GRPC_SERVER"
