@@ -1,9 +1,9 @@
 module "config" {
-  source = "./modules/config"
+  source = "../modules/config"
 }
 
 module "vpc" {
-  source        = "./modules/vpc"
+  source        = "../modules/vpc"
   name          = "vpc-${terraform.workspace}"
   environment           = terraform.workspace
   account_id            = module.config.account_id
@@ -20,7 +20,7 @@ module "vpc" {
 }
 
 module "eks" {
-  source             = "./modules/eks"
+  source             = "../modules/eks"
   cluster_name       = "test-simetric"
   environment        = terraform.workspace
   public_subnet_ids  = module.vpc.public_subnet_ids
