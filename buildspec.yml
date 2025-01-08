@@ -55,7 +55,8 @@ phases:
       - echo "Inicializando Terraform en el directorio 'app'..."
       - terraform init
       - terraform workspace list
-      
+      - terraform workspace select $WORKSPACE
+      - echo "Seleccionando el workspace: $WORKSPACE"
 artifacts:
   files:
     - "**/*"
