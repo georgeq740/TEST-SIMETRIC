@@ -97,8 +97,4 @@ resource "aws_eks_node_group" "node_group" {
 
   instance_types = ["t3.medium"]  # Tipo de instancia para los nodos
   ami_type       = "AL2_x86_64"  # Amazon Linux 2 AMI para EKS
-
-  tags = {
-    Environment = var.environment
-  }
 }
