@@ -98,8 +98,18 @@ resource "aws_eks_node_group" "node_group" {
   ami_type       = "AL2_x86_64"  # Amazon Linux 2 AMI para EKS
 }
 
-# Configurar el mapa aws-auth
+# Verificar si el ConfigMap ya existe
+data "kubernetes_config_map" "existing_aws_auth" {
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
+}
+
+# Configurar el mapa aws-auth (solo si no existe)
 resource "kubernetes_config_map" "aws_auth" {
+  count = data.kubernetes_config_map.existing_aws_auth.metadata[0].name == "" ? 1 : 0
+
   metadata {
     name      = "aws-auth"
     namespace = "kube-system"
