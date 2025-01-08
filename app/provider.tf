@@ -59,7 +59,7 @@ depends_on = [module.eks]
           image = "585768158376.dkr.ecr.us-east-1.amazonaws.com/servidor:latest" 
 
           port {
-            container_port = 80
+            container_port = 50051
           }
 
           resources {
@@ -97,7 +97,7 @@ depends_on = [module.eks]
           image = "585768158376.dkr.ecr.us-east-1.amazonaws.com/cliente:latest"
 
           port {
-            container_port = 80
+            container_port = 50051
           }
 
           resources {
@@ -121,8 +121,8 @@ resource "kubernetes_service" "servidor_service" {
     selector = { app = "servidor" }
 
     port {
-      port        = 80
-      target_port = 80
+      port        = 50051
+      target_port = 50051
     }
 
     type = "ClusterIP"
