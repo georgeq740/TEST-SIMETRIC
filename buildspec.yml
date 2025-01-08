@@ -52,8 +52,6 @@ phases:
       - ls -al
       - echo "Inicializando Terraform..."
       - terraform init
-      - echo "Seleccionando el workspace: $WORKSPACE"
-      - terraform workspace select $WORKSPACE || terraform workspace new $WORKSPACE
 
 artifacts:
   files:
