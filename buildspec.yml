@@ -40,6 +40,8 @@ phases:
   build:
     commands:
       - echo "Preparando archivos para la construcción..."
+      - mkdir -p grpc/cliente/protos/   # Crear el directorio si no existe
+      - mkdir -p grpc/servidor/protos/  # Crear el directorio si no existe
       - cp grpc/protos/example.proto grpc/cliente/protos/
       - cp grpc/protos/example.proto grpc/servidor/protos/
       - echo "Construyendo las imágenes Docker..."
