@@ -36,6 +36,7 @@ data "aws_eks_cluster_auth" "eks_auth" {
 
 # Deployment del servidor
 resource "kubernetes_deployment" "servidor" {
+depends_on = [aws_eks_node_group.node_group]
   metadata {
     name      = "servidor"
     namespace = "default"
@@ -73,6 +74,7 @@ resource "kubernetes_deployment" "servidor" {
 
 # Deployment del cliente
 resource "kubernetes_deployment" "cliente" {
+depends_on = [aws_eks_node_group.node_group]
   metadata {
     name      = "cliente"
     namespace = "default"
