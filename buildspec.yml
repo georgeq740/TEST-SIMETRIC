@@ -50,6 +50,10 @@ phases:
     commands:
       - echo "Listando archivos del proyecto..."
       - ls -al
+      - echo "Configurando acceso a Kubernetes..."
+      - aws eks update-kubeconfig --region $AWS_REGION --name $WORKSPACE
+      - kubectl config use-context arn:aws:eks:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/$WORKSPACE
+      - echo "Eliminando ConfigMap aws-auth existente (si aplica)..."
       - kubectl delete configmap aws-auth -n kube-system || echo "ConfigMap no existe o ya fue eliminado."
       - echo "Cambiando al directorio de Terraform (app)..."
       - cd app
