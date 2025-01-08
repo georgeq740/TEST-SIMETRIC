@@ -23,7 +23,13 @@ phases:
       - echo "Docker iniciado exitosamente."
       - curl -L "https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
       - chmod +x /usr/local/bin/docker-compose
-
+      - echo "Instalando Terraform v1.0.3..."
+      - yum install -y unzip
+      - curl -o terraform.zip https://releases.hashicorp.com/terraform/1.0.3/terraform_1.0.3_linux_amd64.zip
+      - unzip terraform.zip
+      - mv terraform /usr/bin/
+      - terraform version
+      
   pre_build:
     commands:
       - echo "Iniciando sesión en Amazon ECR..."
@@ -45,7 +51,9 @@ phases:
       - echo "Listando archivos del proyecto..."
       - ls -al
       - echo "Inicializando Terraform..."
-      - terraform init 
+      - terraform init
+      - echo "Seleccionando el workspace: $WORKSPACE"
+      - terraform workspace select $WORKSPACE || terraform workspace new $WORKSPACE
 
 artifacts:
   files:
