@@ -10,7 +10,7 @@ env:
     TF_VAR_cliente_image: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/cliente:${IMAGE_TAG}"
     TF_VAR_servidor_image: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/servidor:${IMAGE_TAG}"
     WORKSPACE: "prod"
-   
+
 phases:
   install:
     commands:
@@ -24,12 +24,12 @@ phases:
       - curl -L "https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
       - chmod +x /usr/local/bin/docker-compose
       - echo "Instalando Terraform v1.0.3..."
-      - yum install -y unzip
+      - yum install -y unzip jq
       - curl -o terraform.zip https://releases.hashicorp.com/terraform/1.0.3/terraform_1.0.3_linux_amd64.zip
       - unzip terraform.zip
       - mv terraform /usr/bin/
       - terraform version
-      
+
   pre_build:
     commands:
       - echo "Iniciando sesión en Amazon ECR..."
@@ -50,6 +50,33 @@ phases:
     commands:
       - echo "Listando archivos del proyecto..."
       - ls -al
+      - echo "Configurando acceso a Kubernetes..."
+      - aws eks update-kubeconfig --region $AWS_REGION --name $WORKSPACE
+
+      - echo "Aplicando ConfigMap aws-auth manualmente..."
+      - cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: aws-auth
+          namespace: kube-system
+        data:
+          mapRoles: |
+            - rolearn: arn:aws:iam::${AWS_ACCOUNT_ID}:role/${WORKSPACE}-node-role
+              username: system:node:{{EC2PrivateDNSName}}
+              groups:
+                - system:bootstrappers
+                - system:nodes
+          mapUsers: |
+            - userarn: arn:aws:iam::${AWS_ACCOUNT_ID}:user/terraform
+              username: terraform
+              groups:
+                - system:masters
+        EOF
+
+      - echo "Verificando configuración de Kubernetes..."
+      - kubectl get configmap aws-auth -n kube-system -o yaml
+
       - echo "Cambiando al directorio de Terraform (app)..."
       - cd app
       - echo "Inicializando Terraform en el directorio 'app'..."
@@ -61,7 +88,6 @@ phases:
       - terraform plan -out=tfplan
       - echo "Aplicando cambios con Terraform..."
       - terraform apply -auto-approve tfplan
-
 
 artifacts:
   files:
