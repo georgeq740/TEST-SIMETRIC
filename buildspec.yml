@@ -33,25 +33,26 @@ phases:
     commands:
       - echo "Construyendo las imágenes Docker..."
       - docker-compose build
-      - echo "Etiquetando y subiendo imágenes a ECR..."
+      - echo "Etiquetando imágenes para Amazon ECR..."
       - docker tag cliente:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_CLIENTE:$IMAGE_TAG
       - docker tag servidor:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_SERVIDOR:$IMAGE_TAG
+      - echo "Subiendo imágenes a Amazon ECR..."
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_CLIENTE:$IMAGE_TAG
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_SERVIDOR:$IMAGE_TAG
-
+    
   post_build:
-    commands:
-      - echo "Listando archivos del proyecto..."
-      - ls -al
-      - echo "Inicializando Terraform..."
-      - terraform init
-      - echo "Seleccionando el workspace: $WORKSPACE"
-      - terraform workspace select $WORKSPACE
-      - echo "Planeando los cambios con Terraform en el workspace $WORKSPACE..."
-      - terraform plan -out=tfplan
-      - echo "Aplicando los cambios con Terraform en el workspace $WORKSPACE..."
-      - terraform apply -auto-approve tfplan
-
-artifacts:
-  files:
-    - "**/*"
+      commands:
+        - echo "Listando archivos del proyecto..."
+        - ls -al
+        - echo "Inicializando Terraform..."
+        - terraform init
+        - echo "Seleccionando el workspace: $WORKSPACE"
+        - terraform workspace select $WORKSPACE
+        - echo "Planeando los cambios con Terraform en el workspace $WORKSPACE..."
+        - terraform plan -out=tfplan
+        - echo "Aplicando los cambios con Terraform en el workspace $WORKSPACE..."
+        - terraform apply -auto-approve tfplan
+  
+  artifacts:
+    files:
+      - "**/*"
