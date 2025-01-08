@@ -45,13 +45,7 @@ phases:
       - echo "Listando archivos del proyecto..."
       - ls -al
       - echo "Inicializando Terraform..."
-      - terraform init
-      - echo "Seleccionando el workspace: $WORKSPACE"
-      - terraform workspace select $WORKSPACE
-      - echo "Planeando los cambios con Terraform en el workspace $WORKSPACE..."
-      - terraform plan -out=tfplan
-      - echo "Aplicando los cambios con Terraform en el workspace $WORKSPACE..."
-      - terraform apply -auto-approve tfplan  
+      - terraform init 
 
 artifacts:
   files:
