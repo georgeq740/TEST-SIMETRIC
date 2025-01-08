@@ -13,12 +13,13 @@ phases:
       - echo "Instalando Docker..."
       - yum update -y
       - yum install -y docker
-      - systemctl start docker
-      - systemctl enable docker
-      - usermod -a -G docker $USER
-      - echo "Instalando dependencias adicionales..."
+      - echo "Iniciando Docker en segundo plano..."
+      - nohup dockerd &>/var/log/dockerd.log &
+      - timeout 15 sh -c "until docker info; do echo 'Esperando a Docker...' && sleep 1; done"
+      - echo "Docker iniciado exitosamente."
       - curl -L "https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
       - chmod +x /usr/local/bin/docker-compose
+
   pre_build:
     commands:
       - echo "Iniciando sesión en Amazon ECR..."
