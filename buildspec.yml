@@ -31,7 +31,7 @@ phases:
       - terraform version
 
   pre_build:
-    commands:
+    commands:    
       - echo "Iniciando sesión en Amazon ECR..."
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
       - echo "Autenticando en Docker Hub..."
@@ -39,6 +39,9 @@ phases:
 
   build:
     commands:
+      - echo "Preparando archivos para la construcción..."
+      - cp grpc/protos/example.proto grpc/cliente/protos/
+      - cp grpc/protos/example.proto grpc/servidor/protos/
       - echo "Construyendo las imágenes Docker..."
       - docker-compose build
       - echo "Etiquetando imágenes para Amazon ECR..."
