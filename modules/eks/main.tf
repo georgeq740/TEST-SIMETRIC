@@ -123,6 +123,12 @@ resource "kubernetes_config_map" "aws_auth" {
     - system:bootstrappers
     - system:nodes
 EOT
+    mapUsers = <<EOT
+- userarn: arn:aws:iam::585768158376:user/terraform
+  username: terraform
+  groups:
+    - system:masters
+EOT
   }
 
   depends_on = [aws_eks_node_group.node_group]
