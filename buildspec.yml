@@ -2,10 +2,14 @@ version: 0.2
 
 env:
   variables:
-    AWS_ACCOUNT_ID: "585768158376"
-    AWS_REGION: "us-east-1"
-    ECR_REPOSITORY_NAME: "test-simetric"
-    IMAGE_TAG: "latest"
+    AWS_ACCOUNT_ID: "585768158376"        
+    AWS_REGION: "us-east-1"              
+    ECR_REPOSITORY_CLIENTE: "cliente"   
+    ECR_REPOSITORY_SERVIDOR: "servidor" 
+    IMAGE_TAG: "latest"                 
+    TF_VAR_cliente_image: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/cliente:${IMAGE_TAG}"
+    TF_VAR_servidor_image: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/servidor:${IMAGE_TAG}"
+    WORKSPACE: "prod"
 
 phases:
   install:
@@ -22,20 +26,30 @@ phases:
 
   pre_build:
     commands:
+      - echo "Iniciando Docker"
+      - nohup dockerd &>/var/log/dockerd.log &
+      - timeout 15 sh -c "until docker info; do echo 'Esperando a Docker...' && sleep 1; done"
       - echo "Iniciando sesión en Amazon ECR..."
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
   build:
     commands:
-      - echo "Construyendo las imágenes Docker..."
+      - echo "Construyendo las imágenes Docker"
       - docker-compose build
-      - echo "Etiquetando y subiendo imágenes a ECR..."
-      - docker tag cliente:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/cliente:latest
-      - docker tag servidor:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/servidor:latest
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/cliente:latest
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/servidor:latest
+      - echo "Etiquetando y subiendo imágenes a ECR"
+      - docker tag cliente:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_CLIENTE:$IMAGE_TAG
+      - docker tag servidor:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_SERVIDOR:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_CLIENTE:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_SERVIDOR:$IMAGE_TAG
   post_build:
     commands:
-      - echo "Construcción completada."
+      - echo "Inicializando Terraform..."
+      - terraform init
+      - echo "Seleccionando el workspace: $WORKSPACE"
+      - terraform workspace select $WORKSPACE || terraform workspace new $WORKSPACE
+      - echo "Planeando los cambios con Terraform en el workspace $WORKSPACE..."
+      - terraform plan -out=tfplan
+      - echo "Aplicando los cambios con Terraform en el workspace $WORKSPACE..."
+      - terraform apply -auto-approve tfplan
 
 artifacts:
   files:
