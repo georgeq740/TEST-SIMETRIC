@@ -56,7 +56,7 @@ depends_on = [module.eks]
       spec {
         container {
           name  = "servidor"
-          image = "nginx:latest"
+          image = "585768158376.dkr.ecr.us-east-1.amazonaws.com/servidor:latest" 
 
           port {
             container_port = 80
@@ -94,7 +94,7 @@ depends_on = [module.eks]
       spec {
         container {
           name  = "cliente"
-          image = "httpd:latest"
+          image = "585768158376.dkr.ecr.us-east-1.amazonaws.com/cliente:latest"
 
           port {
             container_port = 80
