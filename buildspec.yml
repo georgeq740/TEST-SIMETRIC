@@ -12,7 +12,12 @@ phases:
     runtime-versions:
       docker: 20
     commands:
-      - echo "Instalando dependencias necesarias..."
+      - echo "Instalando Docker..."
+      - amazon-linux-extras enable docker
+      - yum install -y docker
+      - service docker start
+      - usermod -a -G docker $USER
+      - echo "Instalando dependencias adicionales..."
       - yum install -y docker-compose
   pre_build:
     commands:
