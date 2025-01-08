@@ -79,7 +79,7 @@ resource "aws_iam_role_policy_attachment" "ecr_read_only_policy" {
 
 resource "aws_iam_role_policy_attachment" "vpc_cni_policy" {
   role       = aws_iam_role.node_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSCNIPolicy"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
 
 # Crear el grupo de nodos
