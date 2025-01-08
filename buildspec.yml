@@ -53,10 +53,14 @@ phases:
       - echo "Cambiando al directorio de Terraform (app)..."
       - cd app
       - echo "Inicializando Terraform en el directorio 'app'..."
-      - terraform init
-      - terraform workspace list
+      - terraform init      
       - terraform workspace select $WORKSPACE
-      - echo "Longitud de WORKSPACE: ${#WORKSPACE}"
+      - echo "Workspace donde se va a desplegar..."
+      - terraform workspace show
+      - echo "Planeando la infraestructura con Terraform..."
+      - terraform plan -out=tfplan
+      - echo "Aplicando cambios con Terraform..."
+      - terraform apply -auto-approve tfplan
 
 
 artifacts:
