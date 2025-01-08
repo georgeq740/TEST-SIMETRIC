@@ -56,7 +56,8 @@ phases:
       - terraform init
       - terraform workspace list
       - terraform workspace select $WORKSPACE
-      - echo "Seleccionando el workspace: ${WORKSPACE}"
+      - echo "Longitud de WORKSPACE: ${#WORKSPACE}"
+
 
 artifacts:
   files:
