@@ -47,7 +47,6 @@ data "aws_eks_cluster_auth" "eks_auth" {
   name = aws_eks_cluster.eks_cluster.name
 }
 
-
 # Crear el rol IAM para los nodos
 resource "aws_iam_role" "node_role" {
   name = "${var.cluster_name}-node-role"
@@ -97,4 +96,24 @@ resource "aws_eks_node_group" "node_group" {
 
   instance_types = ["t3.medium"]  # Tipo de instancia para los nodos
   ami_type       = "AL2_x86_64"  # Amazon Linux 2 AMI para EKS
+}
+
+# Configurar el mapa aws-auth
+resource "kubernetes_config_map" "aws_auth" {
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
+
+  data = {
+    mapRoles = <<EOT
+- rolearn: ${aws_iam_role.node_role.arn}
+  username: system:node:{{EC2PrivateDNSName}}
+  groups:
+    - system:bootstrappers
+    - system:nodes
+EOT
+  }
+
+  depends_on = [aws_eks_node_group.node_group]
 }
