@@ -57,7 +57,7 @@ phases:
       - terraform workspace select $WORKSPACE
       - echo "Workspace donde se va a desplegar..."
       - terraform workspace show
-      - terraform destroy -auto-approve tfplan
+      - terraform destroy -auto-approve
 
 
 artifacts:
