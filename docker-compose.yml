@@ -3,7 +3,8 @@ version: "3.8"
 services:
   cliente:
     build:
-      context: ./grpc/cliente
+      context: ./grpc
+      dockerfile: cliente/Dockerfile
     image: cliente:latest
     depends_on:
       - servidor
@@ -12,7 +13,8 @@ services:
 
   servidor:
     build:
-      context: ./grpc/servidor
+      context: ./grpc
+      dockerfile: servidor/Dockerfile
     image: servidor:latest
     ports:
       - "50051:50051"
@@ -21,3 +23,4 @@ services:
 
 networks:
   grpc-network:
+
