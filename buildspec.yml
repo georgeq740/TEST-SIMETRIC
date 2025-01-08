@@ -54,6 +54,10 @@ phases:
       - cd app
       - echo "Inicializando Terraform en el directorio 'app'..."
       - terraform init
+      - echo "Planeando la infraestructura con Terraform..."
+      - terraform plan -out=tfplan
+      - echo "Aplicando cambios con Terraform..."
+      - terraform apply -auto-approve tfplan
 
 
 artifacts:
