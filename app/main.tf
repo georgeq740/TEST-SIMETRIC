@@ -25,5 +25,8 @@ module "eks" {
   environment        = terraform.workspace
   public_subnet_ids  = module.vpc.public_subnet_ids
   private_subnet_ids = module.vpc.private_subnet_ids
-  aws_region         = module.config.region
+  region             = module.config.region
+
+  cliente_image      = "${module.config.account_id}.dkr.ecr.${module.config.region}.amazonaws.com/cliente:latest"
+  servidor_image     = "${module.config.account_id}.dkr.ecr.${module.config.region}.amazonaws.com/servidor:latest"
 }
