@@ -53,8 +53,28 @@ phases:
       - echo "Configurando acceso a Kubernetes..."
       - aws eks update-kubeconfig --region us-east-1 --name test-simetric
       - kubectl config use-context arn:aws:eks:us-east-1:585768158376:cluster/test-simetric
-      - echo "Eliminando ConfigMap aws-auth existente (si aplica)..."
-      - kubectl delete configmap aws-auth -n kube-system || echo "ConfigMap no existe o ya fue eliminado."
+      - echo "Verificando si el ConfigMap aws-auth está configurado..."
+      - kubectl get configmap aws-auth -n kube-system || cat <<EOF | kubectl apply -f - --validate=false
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system
+data:
+  mapRoles: |
+    - rolearn: arn:aws:iam::585768158376:role/test-simetric-node-role
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+  mapUsers: |
+    - userarn: arn:aws:iam::585768158376:user/terraform
+      username: terraform
+      groups:
+        - system:masters
+EOF
+      - echo "Validando si los nodos están disponibles..."
+      - kubectl get nodes || echo "Los nodos aún no están disponibles. Verifica la configuración."
       - echo "Cambiando al directorio de Terraform (app)..."
       - cd app
       - echo "Inicializando Terraform en el directorio 'app'..."
