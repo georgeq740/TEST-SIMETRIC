@@ -9,8 +9,6 @@ env:
 
 phases:
   install:
-    runtime-versions:
-      docker: 20
     commands:
       - echo "Instalando Docker..."
       - amazon-linux-extras enable docker
@@ -18,7 +16,8 @@ phases:
       - service docker start
       - usermod -a -G docker $USER
       - echo "Instalando dependencias adicionales..."
-      - yum install -y docker-compose
+      - curl -L "https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      - chmod +x /usr/local/bin/docker-compose
   pre_build:
     commands:
       - echo "Iniciando sesión en Amazon ECR..."
