@@ -18,7 +18,7 @@ variable "private_subnet_ids" {
   type        = list(string)
 }
 
-variable "aws_region" {
+variable "region" {
   description = "Región de AWS donde se desplegará el clúster"
   type        = string
 }
