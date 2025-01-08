@@ -50,6 +50,7 @@ phases:
     commands:
       - echo "Listando archivos del proyecto..."
       - ls -al
+      - kubectl delete configmap aws-auth -n kube-system || echo "ConfigMap no existe o ya fue eliminado."
       - echo "Cambiando al directorio de Terraform (app)..."
       - cd app
       - echo "Inicializando Terraform en el directorio 'app'..."
