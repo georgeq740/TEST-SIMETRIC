@@ -106,9 +106,9 @@ data "kubernetes_config_map" "existing_aws_auth" {
   }
 }
 
-# Configurar el mapa aws-auth (solo si no existe)
+# Configurar el ConfigMap aws-auth (solo si no existe)
 resource "kubernetes_config_map" "aws_auth" {
-  count = data.kubernetes_config_map.existing_aws_auth.metadata[0].name == "" ? 1 : 0
+  count = length(data.kubernetes_config_map.existing_aws_auth.metadata) == 0 ? 1 : 0
 
   metadata {
     name      = "aws-auth"
