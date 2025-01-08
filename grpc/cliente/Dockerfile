@@ -1,26 +1,22 @@
-# Dockerfile en grpc/cliente
-
-# Imagen base
+# Usar la imagen base
 FROM python:3.9-slim
 
-# Establecer directorio de trabajo
+# Establecer el directorio de trabajo
 WORKDIR /app
 
 # Copiar dependencias y el código fuente del cliente
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY client.py .
+COPY protos/example.proto ./protos/
 
-# Copiar el archivo .proto desde la ruta relativa
-COPY ../protos/example.proto ./protos/
-
-# Instalar protobuf y grpc-tools, y compilar el archivo .proto
+# Instalar dependencias de Python y compilar el archivo .proto
 RUN apt-get update && apt-get install -y protobuf-compiler && \
     pip install grpcio grpcio-tools && \
     python -m grpc_tools.protoc -I./protos --python_out=. --grpc_python_out=. ./protos/example.proto && \
     apt-get remove -y protobuf-compiler && apt-get autoremove -y && apt-get clean
 
-# Copiar el script del cliente
-COPY client.py .
+# Instalar las dependencias del cliente
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Comando de inicio
+# Comando para iniciar el cliente
 CMD ["python", "client.py"]
