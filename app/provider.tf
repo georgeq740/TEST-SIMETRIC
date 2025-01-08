@@ -56,10 +56,10 @@ depends_on = [module.eks]
       spec {
         container {
           name  = "servidor"
-          image = var.servidor_image
+          image = nginx:latest
 
           port {
-            container_port = var.container_port
+            container_port = 80
           }
 
           resources {
@@ -94,10 +94,10 @@ depends_on = [module.eks]
       spec {
         container {
           name  = "cliente"
-          image = var.cliente_image
+          image = httpd:latest
 
           port {
-            container_port = var.container_port
+            container_port = 80
           }
 
           resources {
@@ -121,8 +121,8 @@ resource "kubernetes_service" "servidor_service" {
     selector = { app = "servidor" }
 
     port {
-      port        = var.container_port
-      target_port = var.container_port
+      port        = 80
+      target_port = 80
     }
 
     type = "ClusterIP"
