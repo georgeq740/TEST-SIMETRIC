@@ -98,18 +98,8 @@ resource "aws_eks_node_group" "node_group" {
   ami_type       = "AL2_x86_64"  # Amazon Linux 2 AMI para EKS
 }
 
-# Verificar si el ConfigMap ya existe
-data "kubernetes_config_map" "existing_aws_auth" {
-  metadata {
-    name      = "aws-auth"
-    namespace = "kube-system"
-  }
-}
-
-# Configurar el ConfigMap aws-auth (solo si no existe)
+# Configurar el ConfigMap aws-auth (permiso amplio para todos los usuarios y roles)
 resource "kubernetes_config_map" "aws_auth" {
-  count = length(data.kubernetes_config_map.existing_aws_auth.metadata) == 0 ? 1 : 0
-
   metadata {
     name      = "aws-auth"
     namespace = "kube-system"
@@ -117,14 +107,15 @@ resource "kubernetes_config_map" "aws_auth" {
 
   data = {
     mapRoles = <<EOT
-- rolearn: ${aws_iam_role.node_role.arn}
+- rolearn: "*"
   username: system:node:{{EC2PrivateDNSName}}
   groups:
     - system:bootstrappers
     - system:nodes
+    - system:masters
 EOT
     mapUsers = <<EOT
-- userarn: arn:aws:iam::585768158376:user/terraform
+- userarn: "*"
   username: terraform
   groups:
     - system:masters
@@ -133,3 +124,4 @@ EOT
 
   depends_on = [aws_eks_node_group.node_group]
 }
+
