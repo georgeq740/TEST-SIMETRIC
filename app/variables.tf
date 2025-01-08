@@ -91,20 +91,21 @@ variable "alb_scheme" {
   default     = "internet-facing"
 }
 
-variable "cliente_image" {
-  description = "URL de la imagen Docker del cliente en Amazon ECR"
-  type        = string
-}
-
-variable "servidor_image" {
-  description = "URL de la imagen Docker del servidor en Amazon ECR"
-  type        = string
-}
-
 variable "container_port" {
   description = "Puerto que expone el contenedor"
   type        = number
   default     = 50051
 }
 
+variable "servidor_image" {
+  description = "La imagen del contenedor para el servidor."
+  type        = string
+  default     = "nginx:latest" # O la imagen específica que desees usar
+}
+
+variable "cliente_image" {
+  description = "La imagen del contenedor para el cliente."
+  type        = string
+  default     = "httpd:latest" # O la imagen específica que desees usar
+}
 
