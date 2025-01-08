@@ -54,8 +54,6 @@ phases:
       - cd app
       - echo "Inicializando Terraform en el directorio 'app'..."
       - terraform init
-      - echo "Listando los workspaces"
-      - terraform workspace list
       - echo "Seleccionando el workspace: $WORKSPACE"
       - terraform workspace select $WORKSPACE || terraform workspace new $WORKSPACE
       - echo "Planeando los cambios con Terraform en el workspace $WORKSPACE..."
