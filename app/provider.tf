@@ -34,9 +34,7 @@ data "aws_eks_cluster_auth" "eks_auth" {
   name = module.eks.eks_cluster_name
 }
 
-# Deployment del servidor
 resource "kubernetes_deployment" "servidor" {
-depends_on = [module.eks]
   metadata {
     name      = "servidor"
     namespace = "default"
@@ -56,10 +54,10 @@ depends_on = [module.eks]
       spec {
         container {
           name  = "servidor"
-          image = "585768158376.dkr.ecr.us-east-1.amazonaws.com/servidor:latest" 
+          image = var.servidor_image  # Aquí se utiliza la variable para la imagen
 
           port {
-            container_port = 50051
+            container_port = 50051  # Ajusta según el puerto que exponga tu servidor
           }
 
           resources {
@@ -74,7 +72,6 @@ depends_on = [module.eks]
 
 # Deployment del cliente
 resource "kubernetes_deployment" "cliente" {
-depends_on = [module.eks]
   metadata {
     name      = "cliente"
     namespace = "default"
@@ -94,10 +91,15 @@ depends_on = [module.eks]
       spec {
         container {
           name  = "cliente"
-          image = "585768158376.dkr.ecr.us-east-1.amazonaws.com/cliente:latest"
+          image = var.cliente_image  # Aquí se utiliza la variable para la imagen
+
+          env {
+            name  = "GRPC_SERVER"
+            value = "servidor-service.default.svc.cluster.local:50051"
+          }
 
           port {
-            container_port = 50051
+            container_port = 50051  # Ajusta si el cliente usa otro puerto
           }
 
           resources {
