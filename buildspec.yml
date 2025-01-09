@@ -14,6 +14,9 @@ env:
 phases:
   install:
     commands:
+      - echo "Instalando dependencias necesarias..."
+      - pip install -r grpc/servidor/requirements.txt
+      - pip install -r grpc/cliente/requirements.txt
       - echo "Instalando Docker..."
       - yum update -y
       - yum install -y docker
