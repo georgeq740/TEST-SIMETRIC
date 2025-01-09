@@ -162,9 +162,9 @@ resource "kubernetes_ingress" "servidor_ingress" {
     name      = "servidor-ingress"
     namespace = "default"
     annotations = {
-      "alb.ingress.kubernetes.io/scheme"          = "internet-facing"
-      "alb.ingress.kubernetes.io/target-type"     = "ip"
-      "alb.ingress.kubernetes.io/listen-ports"   = jsonencode([{ "HTTP" = 80 }])
+      "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
+      "alb.ingress.kubernetes.io/target-type"      = "ip"
+      "alb.ingress.kubernetes.io/listen-ports"    = jsonencode([{ "HTTP" = 80 }])
       "alb.ingress.kubernetes.io/backend-protocol" = "HTTP"
     }
   }
@@ -173,10 +173,10 @@ resource "kubernetes_ingress" "servidor_ingress" {
     rule {
       http {
         path {
-          path     = "/"
+          path         = "/"
           backend {
             service_name = "servidor-service"
-            service_port = 50051          
+            service_port = 50051
           }
         }
       }

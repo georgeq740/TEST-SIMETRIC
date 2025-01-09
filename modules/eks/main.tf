@@ -151,7 +151,11 @@ resource "helm_release" "alb_controller" {
     name  = "serviceAccount.name"
     value = "aws-load-balancer-controller"
   }
-  depends_on = [aws_iam_role_policy_attachment.alb_controller_policy_attachment]
+  depends_on = [
+    aws_eks_cluster.eks_cluster,
+    aws_eks_node_group.node_group,
+    aws_iam_role_policy_attachment.alb_controller_policy_attachment
+  ]
 }
 # Configurar el ConfigMap aws-auth (permiso amplio para todos los usuarios y roles)
 
