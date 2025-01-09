@@ -160,8 +160,6 @@ resource "helm_release" "alb_controller" {
 # Configurar el ConfigMap aws-auth (permiso amplio para todos los usuarios y roles)
 
 resource "kubernetes_config_map" "aws_auth" {
-  count = length(data.kubernetes_config_map.existing_aws_auth.metadata) == 0 ? 1 : 0
-
   metadata {
     name      = "aws-auth"
     namespace = "kube-system"
@@ -186,11 +184,3 @@ EOT
 
   depends_on = [aws_eks_node_group.node_group]
 }
-
-data "kubernetes_config_map" "existing_aws_auth" {
-  metadata {
-    name      = "aws-auth"
-    namespace = "kube-system"
-  }
-}
-
