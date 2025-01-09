@@ -98,6 +98,100 @@ resource "aws_eks_node_group" "node_group" {
   ami_type       = "AL2_x86_64"  # Amazon Linux 2 AMI para EKS
 }
 
+# Rol y políticas para el AWS Load Balancer Controller
+resource "aws_iam_role" "alb_controller_role" {
+  name = "${var.cluster_name}-alb-controller-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "alb_controller_policy" {
+  name   = "${var.cluster_name}-alb-controller-policy"
+  policy = file("${path.module}/alb-controller-policy.json") # Incluye la política oficial del ALB Controller
+}
+
+resource "aws_iam_role_policy_attachment" "alb_controller_policy_attachment" {
+  role       = aws_iam_role.alb_controller_role.name
+  policy_arn = aws_iam_policy.alb_controller_policy.arn
+}
+
+# Instalar el AWS Load Balancer Controller usando Helm
+resource "helm_release" "alb_controller" {
+  name       = "aws-load-balancer-controller"
+  chart      = "aws-load-balancer-controller"
+  repository = "https://aws.github.io/eks-charts"
+  namespace  = "kube-system"
+
+  set {
+    name  = "clusterName"
+    value = aws_eks_cluster.eks_cluster.name
+  }
+
+  set {
+    name  = "region"
+    value = var.aws_region
+  }
+
+  set {
+    name  = "vpcId"
+    value = var.vpc_id
+  }
+
+  set {
+    name  = "serviceAccount.create"
+    value = "true"
+  }
+
+  set {
+    name  = "serviceAccount.name"
+    value = "aws-load-balancer-controller"
+  }
+}
+
+# Recurso Ingress para el servidor
+resource "kubernetes_ingress" "servidor_ingress" {
+  metadata {
+    name      = "servidor-ingress"
+    namespace = "default"
+    annotations = {
+      "alb.ingress.kubernetes.io/scheme"          = "internet-facing"
+      "alb.ingress.kubernetes.io/target-type"     = "ip"
+      "alb.ingress.kubernetes.io/listen-ports"   = jsonencode([{ "HTTP" = 80 }])
+      "alb.ingress.kubernetes.io/backend-protocol" = "HTTP"
+    }
+  }
+
+  spec {
+    rule {
+      http {
+        path {
+          path     = "/"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = "servidor-service"
+              port {
+                number = 50051
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 # Configurar el ConfigMap aws-auth (permiso amplio para todos los usuarios y roles)
 
 resource "kubernetes_config_map" "aws_auth" {
