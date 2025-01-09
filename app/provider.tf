@@ -125,6 +125,7 @@ resource "kubernetes_deployment" "cliente" {
 
 # Servicio del servidor
 resource "kubernetes_service" "servidor_service" {
+  depends_on = [module.eks]
   metadata {
     name      = "servidor-service"
     namespace = "default"
@@ -144,6 +145,7 @@ resource "kubernetes_service" "servidor_service" {
 
 # Servicio del cliente (opcional)
 resource "kubernetes_service" "cliente_service" {
+  depends_on = [module.eks]
   metadata {
     name      = "cliente-service"
     namespace = "default"
