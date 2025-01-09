@@ -158,8 +158,9 @@ resource "helm_release" "alb_controller" {
   ]
 }
 # Configurar el ConfigMap aws-auth (permiso amplio para todos los usuarios y roles)
-
 resource "kubernetes_config_map" "aws_auth" {
+  count = length(data.kubernetes_config_map.existing_aws_auth.metadata) == 0 ? 1 : 0
+
   metadata {
     name      = "aws-auth"
     namespace = "kube-system"
@@ -167,20 +168,24 @@ resource "kubernetes_config_map" "aws_auth" {
 
   data = {
     mapRoles = <<EOT
-- rolearn: arn:aws:iam::*:role/*
-  username: system:node:{{EC2PrivateDNSName}}
-  groups:
-    - system:bootstrappers
-    - system:nodes
-    - system:masters
-EOT
+    - rolearn: arn:aws:iam::${var.aws_account_id}:role/${var.node_role_name}
+      username: system:node:{{EC2PrivateDNSName}}
+      groups:
+        - system:bootstrappers
+        - system:nodes
+    EOT
     mapUsers = <<EOT
-- userarn: arn:aws:iam::*:user/*
-  username: admin
-  groups:
-    - system:masters
-EOT
+    - userarn: arn:aws:iam::${var.aws_account_id}:user/terraform
+      username: terraform
+      groups:
+        - system:masters
+    EOT
   }
+}
 
-  depends_on = [aws_eks_node_group.node_group]
+data "kubernetes_config_map" "existing_aws_auth" {
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
 }

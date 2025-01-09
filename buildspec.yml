@@ -91,6 +91,17 @@ phases:
       - kubectl get nodes
       - kubectl cluster-info
       - kubectl config current-context
+      - kubectl api-versions | grep networking.k8s.io
+      - echo "Verificando pods, servicios e ingress..."
+      - kubectl get pods -A
+      - kubectl get services -A
+      - kubectl get ingress -A
+      - echo "Esperando que los pods estén listos..."
+      - kubectl wait --for=condition=ready pod -l app=servidor --timeout=300s
+      - kubectl wait --for=condition=ready pod -l app=cliente --timeout=300s
+      - echo "Verificando los logs de los pods..."
+      - kubectl logs -l app=servidor
+      - kubectl logs -l app=cliente
       - kubectl config view
       - echo "Verificando el ConfigMap aws-auth..."
       - kubectl describe configmap aws-auth -n kube-system
