@@ -39,13 +39,6 @@ phases:
 
   build:
     commands:
-      - echo "Preparando archivos para la construcción..."
-      - mkdir -p grpc/cliente/protos/
-      - mkdir -p grpc/servidor/protos/
-      - cp grpc/protos/example.proto grpc/cliente/protos/
-      - cp grpc/protos/example.proto grpc/servidor/protos/
-      - echo "Estructura de archivos antes de construir:"
-      - ls -R grpc/
       - echo "Construyendo las imágenes Docker..."
       - docker-compose build
       - echo "Etiquetando imágenes para Amazon ECR..."
