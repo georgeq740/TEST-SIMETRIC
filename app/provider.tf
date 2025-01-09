@@ -174,15 +174,10 @@ resource "kubernetes_ingress" "servidor_ingress" {
     rule {
       http {
         path {
-          path     = "/"
-          path_type = "Prefix"
+          path = "/"
           backend {
-            service {
-              name = kubernetes_service.servidor_service.metadata[0].name
-              port {
-                number = 50051
-              }
-            }
+            service_name = "servidor-service"
+            service_port = 50051
           }
         }
       }
