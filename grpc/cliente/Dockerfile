@@ -7,7 +7,7 @@ WORKDIR /app
 # Copiar dependencias y el código fuente del cliente
 COPY requirements.txt .
 COPY client.py .
-COPY protos/example.proto ./protos/
+COPY ../protos/example.proto ./protos/
 
 # Instalar dependencias de Python y compilar el archivo .proto
 RUN apt-get update && apt-get install -y protobuf-compiler && \
