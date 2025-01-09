@@ -1,6 +1,7 @@
 import grpc
 import example_pb2
 import example_pb2_grpc
+import time
 
 def run():
     with grpc.insecure_channel("servidor-service.default.svc.cluster.local:50051") as channel:
@@ -10,3 +11,6 @@ def run():
 
 if __name__ == "__main__":
     run()
+    print("Client is running and connecting to the server...")
+    while True:
+        time.sleep(60)  # Simula una espera indefinida para que el pod no se cierre
