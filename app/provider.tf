@@ -171,11 +171,9 @@ resource "kubernetes_ingress" "servidor_ingress" {
 
   spec {
     rule {
-      host = "" # Cambia según el dominio que uses
       http {
         path {
           path     = "/"
-          path_type = "Prefix"
           backend {
             service_name = "servidor-service"
             service_port = 50051
@@ -185,3 +183,4 @@ resource "kubernetes_ingress" "servidor_ingress" {
     }
   }
 }
+
