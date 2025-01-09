@@ -24,10 +24,12 @@ provider "aws" {
   }
 }
 
-provider "kubernetes" {
-  host                   = module.eks.eks_cluster_endpoint
-  token                  = data.aws_eks_cluster_auth.eks_auth.token
-  cluster_ca_certificate = base64decode(module.eks.eks_cluster_certificate)
+provider "helm" {
+  kubernetes {
+    host                   = module.eks.eks_cluster_endpoint
+    token                  = data.aws_eks_cluster_auth.eks_auth.token
+    cluster_ca_certificate = base64decode(module.eks.eks_cluster_certificate)
+  }
 }
 
 data "aws_eks_cluster_auth" "eks_auth" {
@@ -173,7 +175,8 @@ resource "kubernetes_ingress" "servidor_ingress" {
     rule {
       http {
         path {
-          path     = "/"
+          path      = "/"
+          path_type = "Prefix"
           backend {
             service_name = "servidor-service"
             service_port = 50051
@@ -183,4 +186,5 @@ resource "kubernetes_ingress" "servidor_ingress" {
     }
   }
 }
+
 
