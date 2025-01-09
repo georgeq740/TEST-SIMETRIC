@@ -40,6 +40,22 @@ resource "aws_eks_cluster" "eks_cluster" {
   }
 }
 
+resource "aws_eks_node_group" "node_group" {
+  cluster_name    = aws_eks_cluster.eks_cluster.name
+  node_group_name = "${var.cluster_name}-node-group"
+  node_role_arn   = aws_iam_role.node_role.arn
+  subnet_ids      = concat(var.public_subnet_ids, var.private_subnet_ids)
+
+  scaling_config {
+    desired_size = 1   # Número de nodos deseados
+    max_size     = 2   # Número máximo de nodos
+    min_size     = 1   # Número mínimo de nodos
+  }
+
+  instance_types = ["t3.medium"]  # Tipo de instancia para los nodos
+  ami_type       = "AL2_x86_64"  # Amazon Linux 2 AMI para EKS
+}
+
 # Rol y políticas para el AWS Load Balancer Controller
 resource "aws_iam_role" "alb_controller_role" {
   name = "${var.cluster_name}-alb-controller-role"
