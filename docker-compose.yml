@@ -4,7 +4,7 @@ services:
   cliente:
     build:
       context: ./grpc/cliente
-      dockerfile: cliente/Dockerfile
+      dockerfile: Dockerfile
     image: cliente:latest
     depends_on:
       - servidor
@@ -14,7 +14,7 @@ services:
   servidor:
     build:
       context: ./grpc/servidor
-      dockerfile: servidor/Dockerfile
+      dockerfile: Dockerfile
     image: servidor:latest
     ports:
       - "50051:50051"
