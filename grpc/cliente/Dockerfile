@@ -1,22 +1,13 @@
-# Usar la imagen base
 FROM python:3.9-slim
 
-# Establecer el directorio de trabajo
 WORKDIR /app
 
-# Copiar dependencias y el código fuente del cliente
 COPY requirements.txt .
-COPY client.py .
-COPY ../protos/example.proto ./protos/
-
-# Instalar dependencias de Python y compilar el archivo .proto
-RUN apt-get update && apt-get install -y protobuf-compiler && \
-    pip install grpcio grpcio-tools && \
-    python -m grpc_tools.protoc -I./protos --python_out=. --grpc_python_out=. ./protos/example.proto && \
-    apt-get remove -y protobuf-compiler && apt-get autoremove -y && apt-get clean
-
-# Instalar las dependencias del cliente
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Comando para iniciar el cliente
+COPY client.py .
+COPY example_pb2.py .
+COPY example_pb2_grpc.py .
+COPY protos/example.proto ./protos/
+
 CMD ["python", "client.py"]
