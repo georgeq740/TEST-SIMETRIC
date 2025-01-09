@@ -10,6 +10,7 @@ terraform {
     }
   }
 }
+
 provider "aws" {
   region = module.config.region
 
@@ -23,7 +24,6 @@ provider "aws" {
   }
 }
 
-
 provider "kubernetes" {
   host                   = module.eks.eks_cluster_endpoint
   token                  = data.aws_eks_cluster_auth.eks_auth.token
@@ -34,10 +34,14 @@ data "aws_eks_cluster_auth" "eks_auth" {
   name = module.eks.eks_cluster_name
 }
 
+# Deployment del servidor
 resource "kubernetes_deployment" "servidor" {
   metadata {
     name      = "servidor"
     namespace = "default"
+    labels = {
+      app = "servidor"
+    }
   }
 
   spec {
@@ -54,10 +58,10 @@ resource "kubernetes_deployment" "servidor" {
       spec {
         container {
           name  = "servidor"
-          image =  "585768158376.dkr.ecr.us-east-1.amazonaws.com/servidor:latest" # var.servidor_image
+          image = "585768158376.dkr.ecr.us-east-1.amazonaws.com/servidor:latest" # Actualiza con tu imagen
 
           port {
-            container_port = 50051  # Ajusta según el puerto que exponga tu servidor
+            container_port = 50051
           }
 
           resources {
@@ -75,6 +79,9 @@ resource "kubernetes_deployment" "cliente" {
   metadata {
     name      = "cliente"
     namespace = "default"
+    labels = {
+      app = "cliente"
+    }
   }
 
   spec {
@@ -91,7 +98,7 @@ resource "kubernetes_deployment" "cliente" {
       spec {
         container {
           name  = "cliente"
-          image = "585768158376.dkr.ecr.us-east-1.amazonaws.com/cliente:latest"  # Aquí se utiliza la variable para la imagen var.cliente_image
+          image = "585768158376.dkr.ecr.us-east-1.amazonaws.com/cliente:latest" # Actualiza con tu imagen
 
           env {
             name  = "GRPC_SERVER"
@@ -99,7 +106,7 @@ resource "kubernetes_deployment" "cliente" {
           }
 
           port {
-            container_port = 50051  # Ajusta si el cliente usa otro puerto
+            container_port = 50051
           }
 
           resources {
@@ -128,5 +135,57 @@ resource "kubernetes_service" "servidor_service" {
     }
 
     type = "ClusterIP"
+  }
+}
+
+# Servicio del cliente (opcional)
+resource "kubernetes_service" "cliente_service" {
+  metadata {
+    name      = "cliente-service"
+    namespace = "default"
+  }
+
+  spec {
+    selector = { app = "cliente" }
+
+    port {
+      port        = 50051
+      target_port = 50051
+    }
+
+    type = "ClusterIP"
+  }
+}
+
+# Ingress para servidor
+resource "kubernetes_ingress" "servidor_ingress" {
+  metadata {
+    name      = "servidor-ingress"
+    namespace = "default"
+    annotations = {
+      "alb.ingress.kubernetes.io/scheme"          = "internet-facing"
+      "alb.ingress.kubernetes.io/target-type"     = "ip"
+      "alb.ingress.kubernetes.io/listen-ports"   = jsonencode([{ "HTTP" = 80 }])
+      "alb.ingress.kubernetes.io/backend-protocol" = "HTTP"
+    }
+  }
+
+  spec {
+    rule {
+      http {
+        path {
+          path     = "/"
+          path_type = "Prefix"
+          backend {
+            service {
+              name = kubernetes_service.servidor_service.metadata[0].name
+              port {
+                number = 50051
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
