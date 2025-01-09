@@ -39,7 +39,10 @@ phases:
 
   build:
     commands:
-      - echo "Construyendo las imágenes Docker..."
+      - echo "Compilando archivos .proto..."
+      - python -m grpc_tools.protoc -Igrpc/protos --python_out=grpc/servidor --grpc_python_out=grpc/servidor grpc/protos/example.proto
+      - python -m grpc_tools.protoc -Igrpc/protos --python_out=grpc/cliente --grpc_python_out=grpc/cliente grpc/protos/example.proto
+      - echo "Construyendo imágenes Docker..."      
       - docker-compose build
       - echo "Etiquetando imágenes para Amazon ECR..."
       - docker tag cliente:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_CLIENTE:$IMAGE_TAG
