@@ -160,6 +160,8 @@ resource "kubernetes_service" "cliente_service" {
 }
 
 resource "kubernetes_ingress" "servidor_ingress" {
+  depends_on = [module.eks.alb_controller]
+
   metadata {
     name      = "servidor-ingress"
     namespace = "default"
@@ -175,8 +177,7 @@ resource "kubernetes_ingress" "servidor_ingress" {
     rule {
       http {
         path {
-          path      = "/"
-          path_type = "Prefix"
+          path = "/"
           backend {
             service_name = "servidor-service"
             service_port = 50051
@@ -186,5 +187,6 @@ resource "kubernetes_ingress" "servidor_ingress" {
     }
   }
 }
+
 
 

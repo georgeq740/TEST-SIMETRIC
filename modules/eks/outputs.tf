@@ -12,3 +12,7 @@ output "eks_cluster_certificate" {
   description = "Certificado CA del clúster de EKS"
   value       = aws_eks_cluster.eks_cluster.certificate_authority[0].data
 }
+
+output "alb_controller" {
+  value = helm_release.alb_controller
+}
