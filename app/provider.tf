@@ -171,12 +171,18 @@ resource "kubernetes_ingress" "servidor_ingress" {
 
   spec {
     rule {
+      host = "" # Ajusta según tu dominio o déjalo vacío
       http {
         path {
-          path         = "/"
+          path     = "/"
+          path_type = "Prefix" # Compatible con networking.k8s.io/v1
           backend {
-            service_name = "servidor-service"
-            service_port = 50051
+            service {
+              name = "servidor-service"
+              port {
+                number = 50051
+              }
+            }
           }
         }
       }
