@@ -175,10 +175,8 @@ resource "kubernetes_ingress" "servidor_ingress" {
         path {
           path     = "/"
           backend {
-            service {
-              service_name = "servidor-service"
-              service_port = 50051
-            }
+            service_name = "servidor-service"
+            service_port = 50051          
           }
         }
       }
