@@ -173,35 +173,35 @@ resource "kubernetes_service" "cliente_service" {
   }
 }
 
-resource "kubernetes_ingress" "servidor_ingress" {
-  depends_on = [module.eks.alb_controller]
+# resource "kubernetes_ingress" "servidor_ingress" {
+#   depends_on = [module.eks.alb_controller]
 
-  metadata {
-    name      = "servidor-ingress"
-    namespace = "default"
-    annotations = {
-      "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
-      "alb.ingress.kubernetes.io/target-type"      = "ip"
-      "alb.ingress.kubernetes.io/listen-ports"    = jsonencode([{ "HTTP" = 80 }])
-      "alb.ingress.kubernetes.io/backend-protocol" = "HTTP"
-    }
-  }
+#   metadata {
+#     name      = "servidor-ingress"
+#     namespace = "default"
+#     annotations = {
+#       "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
+#       "alb.ingress.kubernetes.io/target-type"      = "ip"
+#       "alb.ingress.kubernetes.io/listen-ports"    = jsonencode([{ "HTTP" = 80 }])
+#       "alb.ingress.kubernetes.io/backend-protocol" = "HTTP"
+#     }
+#   }
 
-  spec {
-    rule {     
-      http {
-        path {
-          path      = "/"
-          path_type = "Prefix"
-          backend {
-            service_name = "servidor-service"
-            service_port = 50051
-          }
-        }
-      }
-    }
-  }
-}
+#   spec {
+#     rule {     
+#       http {
+#         path {
+#           path      = "/"
+#           path_type = "Prefix"
+#           backend {
+#             service_name = "servidor-service"
+#             service_port = 50051
+#           }
+#         }
+#       }
+#     }
+#   }
+# }
 
 
 
