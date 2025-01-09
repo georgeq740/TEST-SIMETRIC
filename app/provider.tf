@@ -188,10 +188,11 @@ resource "kubernetes_ingress" "servidor_ingress" {
   }
 
   spec {
-    rule {
+    rule {     
       http {
         path {
-          path = "/"
+          path      = "/"
+          path_type = "Prefix"
           backend {
             service_name = "servidor-service"
             service_port = 50051
