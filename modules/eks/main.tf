@@ -56,6 +56,42 @@ resource "aws_eks_node_group" "node_group" {
   ami_type       = "AL2_x86_64"  # Amazon Linux 2 AMI para EKS
 }
 
+# Crear el rol IAM para los nodos del Node Group
+resource "aws_iam_role" "node_role" {
+  name = "${var.cluster_name}-node-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+
+# Adjuntar políticas necesarias al rol de los nodos
+resource "aws_iam_role_policy_attachment" "node_policy" {
+  role       = aws_iam_role.node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "ecr_read_only_policy" {
+  role       = aws_iam_role.node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+resource "aws_iam_role_policy_attachment" "vpc_cni_policy" {
+  role       = aws_iam_role.node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
+
+
 # Rol y políticas para el AWS Load Balancer Controller
 resource "aws_iam_role" "alb_controller_role" {
   name = "${var.cluster_name}-alb-controller-role"
