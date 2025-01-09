@@ -7,7 +7,7 @@ WORKDIR /app
 # Copiar los archivos necesarios
 COPY requirements.txt .
 COPY server.py .
-COPY protos/example.proto ./protos/
+COPY ../protos/example.proto ./protos/
 
 # Instalar las dependencias necesarias
 RUN apt-get update && apt-get install -y protobuf-compiler && \
