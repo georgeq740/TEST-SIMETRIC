@@ -95,6 +95,11 @@ phases:
       - terraform plan -out=tfplan
       - echo "Aplicando cambios con Terraform..."
       - terraform apply -auto-approve tfplan
+      - echo "Verificando recursos creados..."
+      - kubectl get nodes
+      - kubectl get pods
+      - kubectl get services
+      - kubectl get ingress
 
 artifacts:
   files:

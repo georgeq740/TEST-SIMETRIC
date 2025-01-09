@@ -174,13 +174,10 @@ resource "kubernetes_ingress" "servidor_ingress" {
       http {
         path {
           path     = "/"
-          path_type = "Prefix" # Asegúrate de que es compatible con tu versión de Kubernetes
           backend {
             service {
-              name = kubernetes_service.servidor_service.metadata[0].name
-              port {
-                number = 50051
-              }
+              service_name = "servidor-service"
+              service_port = 50051
             }
           }
         }
