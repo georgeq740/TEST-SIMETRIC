@@ -39,6 +39,10 @@ phases:
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
       - echo "Autenticando en Docker Hub..."
       - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      - echo "Configurando acceso a EKS..."
+      - aws eks update-kubeconfig --region us-east-1 --name test-simetric
+      - export KUBECONFIG=$HOME/.kube/config
+      - kubectl get nodes
 
   build:
     commands:
