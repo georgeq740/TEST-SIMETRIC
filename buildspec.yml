@@ -42,6 +42,7 @@ phases:
       - echo "Configurando acceso a EKS..."
       - aws eks update-kubeconfig --region us-east-1 --name test-simetric
       - export KUBECONFIG=$HOME/.kube/config
+      - kubectl config use-context arn:aws:eks:us-east-1:585768158376:cluster/test-simetric
       - kubectl get nodes
 
   build:
@@ -87,7 +88,10 @@ phases:
                 - system:masters
         EOF
       - echo "Validando si los nodos están disponibles..."
-      - kubectl get nodes || echo "Los nodos aún no están disponibles. Verifica la configuración."
+      - kubectl get nodes
+      - kubectl cluster-info
+      - echo "Verificando el ConfigMap aws-auth..."
+      - kubectl describe configmap aws-auth -n kube-system
       - echo "Cambiando al directorio de Terraform (app)..."
       - cd app
       - echo "Inicializando Terraform en el directorio 'app'..."
