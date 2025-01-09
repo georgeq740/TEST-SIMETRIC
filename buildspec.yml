@@ -90,6 +90,8 @@ phases:
       - echo "Validando si los nodos están disponibles..."
       - kubectl get nodes
       - kubectl cluster-info
+      - kubectl config current-context
+      - kubectl config view
       - echo "Verificando el ConfigMap aws-auth..."
       - kubectl describe configmap aws-auth -n kube-system
       - echo "Cambiando al directorio de Terraform (app)..."
